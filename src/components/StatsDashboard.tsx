@@ -1,14 +1,20 @@
 import React from 'react';
-import { GameResult, COLOR_MAP } from '../types';
+import { GameResult, GameColor, COLOR_MAP } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 interface StatsDashboardProps {
   history: GameResult[];
+  rawHistory: GameColor[];
 }
 
-export const StatsDashboard: React.FC<StatsDashboardProps> = ({ history }) => {
+export const StatsDashboard: React.FC<StatsDashboardProps> = ({ history, rawHistory }) => {
   const counts = history.reduce((acc, curr) => {
     acc[curr.color] = (acc[curr.color] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const rawCounts = rawHistory.reduce((acc, curr) => {
+    acc[curr] = (acc[curr] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
@@ -17,6 +23,13 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ history }) => {
     { name: 'Red', value: counts.red || 0, color: COLOR_MAP.red.hex },
     { name: 'Green', value: counts.green || 0, color: COLOR_MAP.green.hex },
     { name: 'Yellow', value: counts.yellow || 0, color: COLOR_MAP.yellow.hex },
+  ];
+
+  const rawData = [
+    { name: 'Blue', value: rawCounts.blue || 0, color: COLOR_MAP.blue.hex },
+    { name: 'Red', value: rawCounts.red || 0, color: COLOR_MAP.red.hex },
+    { name: 'Green', value: rawCounts.green || 0, color: COLOR_MAP.green.hex },
+    { name: 'Yellow', value: rawCounts.yellow || 0, color: COLOR_MAP.yellow.hex },
   ];
 
   const recent50 = history.slice(0, 50);
@@ -31,26 +44,59 @@ export const StatsDashboard: React.FC<StatsDashboardProps> = ({ history }) => {
   }));
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6">
-        <h3 className="text-xs font-mono text-white/40 uppercase tracking-widest mb-6">Frequency Distribution</h3>
-        <div className="h-64 w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
-              <XAxis dataKey="name" stroke="#666" fontSize={10} tickLine={false} axisLine={false} />
-              <YAxis stroke="#666" fontSize={10} tickLine={false} axisLine={false} />
-              <Tooltip 
-                contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
-                itemStyle={{ color: '#fff' }}
-              />
-              <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xs font-mono text-white/40 uppercase tracking-widest">Historical Frequency</h3>
+            <span className="text-[10px] font-mono text-zinc-600">All Time</span>
+          </div>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <XAxis dataKey="name" stroke="#666" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke="#666" fontSize={10} tickLine={false} axisLine={false} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
+                  itemStyle={{ color: '#fff' }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="bg-zinc-900/50 border border-white/5 rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xs font-mono text-white/40 uppercase tracking-widest">Live Session Heatmap</h3>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10px] font-mono text-emerald-500 uppercase">Live</span>
+            </div>
+          </div>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={rawData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
+                <XAxis dataKey="name" stroke="#666" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke="#666" fontSize={10} tickLine={false} axisLine={false} hide />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '8px' }}
+                  itemStyle={{ color: '#fff' }}
+                />
+                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                  {rawData.map((entry, index) => (
+                    <Cell key={`cell-raw-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </div>
 

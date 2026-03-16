@@ -21,14 +21,17 @@ export function rgbToHsv(r: number, g: number, b: number): [number, number, numb
 export function detectColor(r: number, g: number, b: number): GameColor {
   const [h, s, v] = rgbToHsv(r, g, b);
 
-  // Basic HSV thresholds for the game colors
-  // These might need calibration depending on screen brightness/camera
-  if (s < 20 || v < 20) return 'none';
+  // Looser thresholds for better real-time detection
+  if (s < 15 || v < 15) return 'none';
 
-  if ((h >= 0 && h < 15) || (h >= 345 && h <= 360)) return 'red';
-  if (h >= 190 && h < 250) return 'blue';
-  if (h >= 80 && h < 160) return 'green';
-  if (h >= 40 && h < 70) return 'yellow';
+  // Red: 0-20 or 340-360
+  if ((h >= 0 && h < 20) || (h >= 340 && h <= 360)) return 'red';
+  // Blue: 180-260
+  if (h >= 180 && h < 260) return 'blue';
+  // Green: 70-160
+  if (h >= 70 && h < 160) return 'green';
+  // Yellow: 35-65
+  if (h >= 35 && h < 65) return 'yellow';
 
   return 'none';
 }

@@ -21,6 +21,12 @@ export interface Prediction {
   mostProbable: GameColor;
 }
 
+export interface LiveStatus {
+  currentColor: GameColor;
+  confidence: number;
+  isStable: boolean;
+}
+
 export const COLOR_MAP = {
   blue: { label: 'x2', hex: '#3b82f6', hsv: [210, 70, 70] },
   red: { label: 'x3', hex: '#ef4444', hsv: [0, 70, 70] },
