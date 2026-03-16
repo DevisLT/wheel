@@ -1,0 +1,5 @@
+{
+  "name": "x50 Wheel Predictor",
+  "description": "AI-assisted camera-based predictor for x50 Wheel game using real-time computer vision and statistical analysis.",
+  "requestFramePermissions": ["camera"]
+}
