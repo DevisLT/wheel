@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
   const [history, setHistory] = useState<GameResult[]>([]);
-  const [roi, setRoi] = useState<ROI>({ x: 40, y: 40, width: 20, height: 20 });
+  const [roi, setRoi] = useState<ROI>({ x: 0, y: 0, width: 100, height: 100 });
   const [prediction, setPrediction] = useState<Prediction | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 

@@ -116,7 +116,11 @@ export const CameraView: React.FC<CameraViewProps> = ({ onColorDetected, roi, se
       
       {/* ROI Overlay */}
       <div 
-        className="absolute border-2 border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)] cursor-move"
+        className={`absolute border-2 transition-all duration-300 ${
+          roi.width === 100 && roi.height === 100 
+            ? 'border-emerald-500/20 pointer-events-none' 
+            : 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)] cursor-move'
+        }`}
         style={{
           left: `${roi.x}%`,
           top: `${roi.y}%`,
@@ -125,10 +129,14 @@ export const CameraView: React.FC<CameraViewProps> = ({ onColorDetected, roi, se
         }}
         onMouseDown={handleMouseDown}
       >
-        <div className="absolute -top-6 left-0 bg-emerald-500 text-black text-[10px] font-bold px-1 uppercase">
-          Detection Zone
-        </div>
-        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 cursor-nwse-resize" />
+        {!(roi.width === 100 && roi.height === 100) && (
+          <>
+            <div className="absolute -top-6 left-0 bg-emerald-500 text-black text-[10px] font-bold px-1 uppercase">
+              Detection Zone
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 cursor-nwse-resize" />
+          </>
+        )}
       </div>
 
       <div className="absolute bottom-4 left-4 flex gap-2">
@@ -136,6 +144,16 @@ export const CameraView: React.FC<CameraViewProps> = ({ onColorDetected, roi, se
             <div className={`w-2 h-2 rounded-full ${isStreaming ? 'bg-emerald-500 animate-pulse' : 'bg-red-500'}`} />
             <span className="text-[10px] font-mono text-white/80 uppercase tracking-wider">Live Feed</span>
          </div>
+         
+         <button 
+          onClick={() => setRoi(roi.width === 100 ? { x: 40, y: 40, width: 20, height: 20 } : { x: 0, y: 0, width: 100, height: 100 })}
+          className="bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full flex items-center gap-2 hover:bg-white/10 transition-colors"
+         >
+            <Maximize size={10} className="text-emerald-500" />
+            <span className="text-[10px] font-mono text-white/80 uppercase tracking-wider">
+              {roi.width === 100 ? 'Use ROI' : 'Full Screen'}
+            </span>
+         </button>
       </div>
     </div>
   );
